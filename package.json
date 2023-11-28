@@ -1,8 +1,8 @@
 {
     "name": "locomotive-aos",
-    "version": "1.0.0",
+    "version": "1.0.5",
     "description": "😎 An AOS-Like Initaliser, built for Locomotive Scroll users.",
-    "main": "./dist/exports.jsx",
+    "main": "./dist/exports.js",
     "keywords": [],
     "author": "NITLIX HOLDINGS LTD.",
     "license": "MIT",

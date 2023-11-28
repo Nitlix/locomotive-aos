@@ -1,5 +1,7 @@
 import init from "./init"
 
-export default {
-    init   
+const Aos = {
+    init
 }
+
+export default Aos;
