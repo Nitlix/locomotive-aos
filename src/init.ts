@@ -1,14 +1,34 @@
 import { Config } from "./types";
 
-export default function(config: Config = {}): void {
+const resetAttributes: string[] = ["data-aos", "data-aos-easing", "data-aos-duration", "data-aos-delay"];
+
+export default function(config: Config = {}): { destroy: () => void } {
     const {
-        callback = (el) => {},
+        callback = (e1, e2, e3, e4) => {},
         easing = "ease-in-out",
         duration = 1000,
         mirror = false,
-        delay = 0
+        delay = 0,
+        offset = "0px",
+        mobile = false,
+        minWindowWidth = 0
     } = config;
+
+    const disableAOS = (mobile && /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) || (window.innerWidth < minWindowWidth);
     
+    if (disableAOS) {
+        document.querySelectorAll('[data-aos]').forEach((aosElem) => {
+            resetAttributes.forEach((attr) => {
+                aosElem.removeAttribute(attr);
+            });
+        });
+        //kill aos
+        return {destroy: () => {}}
+    }
+
+
+    const observers: IntersectionObserver[] = [];
+
     document.querySelectorAll('[data-aos]').forEach((aosElem) => {
         const anchorString = aosElem.getAttribute("data-aos-anchor") || "";
         const anchor = anchorString ? (document.querySelector(anchorString) || aosElem) : aosElem;
@@ -17,18 +37,31 @@ export default function(config: Config = {}): void {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     aosElem.classList.add("aos-animate");
-                    callback(aosElem);
+                    callback(aosElem, "enter", observer, entry);
                 }
                 else if (mirror){
                     aosElem.classList.remove("aos-animate");
+                    callback(aosElem, "enter", observer, entry);
                 }
             });
-        })
+        }, {
+            rootMargin: `-${offset} 0px ${offset} 0px`
+        });
         
         observer.observe(anchor);
+        observers.push(observer);
+
         aosElem.classList.add("aos-init");
         aosElem.getAttribute("data-aos-duration") ? null : (aosElem.setAttribute("data-aos-duration", duration.toString()));
         aosElem.getAttribute("data-aos-easing") ? null : (aosElem.setAttribute("data-aos-easing", easing.toString()));
         aosElem.getAttribute("data-aos-delay") ? null : (aosElem.setAttribute("data-aos-delay", delay.toString()));
     });
+
+    return {
+        destroy: () => {
+            observers.forEach((observer) => {
+                observer.disconnect();
+            });
+        }
+    }
 }

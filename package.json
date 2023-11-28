@@ -1,6 +1,6 @@
 {
     "name": "locomotive-aos",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "😎 An AOS-Like Initaliser, built for Locomotive Scroll users.",
     "main": "./dist/exports.js",
     "keywords": [],
